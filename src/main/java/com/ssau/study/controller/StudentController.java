@@ -36,13 +36,13 @@ public class StudentController {
         return studentRepository.readStudent(id);
     }
 
-    @PatchMapping("/update")
+    @PostMapping("/update")
     public Student updateStudent(@RequestBody Student student) {
         return studentRepository.updateStudent(student);
     }
 
-    @PostMapping("/create")
-    public long createStudent(@RequestBody Student student) {
+    @PutMapping("/create")
+    public Student createStudent(@RequestBody Student student) {
         return studentRepository.createStudent(student);
     }
 

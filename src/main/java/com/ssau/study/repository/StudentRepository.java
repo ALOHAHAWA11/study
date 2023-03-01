@@ -14,7 +14,7 @@ public interface StudentRepository {
 
     Student readStudent(long id);
 
-    long createStudent(Student student);
+    Student createStudent(Student student);
 
     Student updateStudent(Student student);
 

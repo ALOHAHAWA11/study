@@ -48,20 +48,27 @@ public class JdbcStudentRepository implements StudentRepository {
     }
 
     @Override
-    public long createStudent(Student student) {
-        return jdbcTemplate.queryForObject("insert into public.students (name, birthdate, number) values (?, ?, ?)"
-                + "RETURNING ID", Long.class, student.getName(), student.getBirthdate(), student.getNumber());
+    public Student createStudent(Student student) {
+        return jdbcTemplate.queryForObject("insert into public.students (name, birthdate, number) values (?, ?, ?) returning id, name, birthdate, number",
+                studentMapper, student.getName(), student.getBirthdate(), student.getNumber());
     }
 
     @Override
     public Student updateStudent(Student student) {
-        jdbcTemplate.update("update public.students set name=?, birthdate=?, number=? where id=?",
+        long updated = jdbcTemplate.update("update public.students set name=?, birthdate=?, number=? where id=?",
                 student.getName(), student.getBirthdate(), student.getNumber(), student.getId());
+        if (updated == 0) {
+            throw new IllegalArgumentException("There is not student in database with id = " + student.getId());
+        }
         return student;
     }
 
     @Override
     public long deleteStudent(long id) {
-        return jdbcTemplate.queryForObject("delete from public.students where id=? RETURNING ID", Long.class, id);
+        long deleted = jdbcTemplate.update("delete from public.students where id=?", id);
+        if (deleted == 0) {
+            throw new IllegalArgumentException("There is not student in database with id = " + id);
+        }
+        return deleted;
     }
 }
