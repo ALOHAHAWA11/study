@@ -41,17 +41,27 @@ public class JdbcStudentRepository implements StudentRepository {
         return namedParameterJdbcTemplate.query("select * from public.students where name ilike '%' || :name || '%'",
                 Collections.singletonMap("name", name), studentMapper);
     }
+
     @Override
     public Student readStudent(long id) {
-        return jdbcTemplate.queryForObject("select * from public.students where id= ?" , studentMapper, id);
+        return jdbcTemplate.queryForObject("select * from public.students where id= ?", studentMapper, id);
     }
-    public Student createStudent(Student student) {
-        Student newStudent = new Student();
-        newStudent.setName(student.getName());
-        newStudent.setBirthdate(student.getBirthdate());
-        newStudent.setNumber(student.getNumber());
-        return jdbcTemplate.queryForObject("insert INTO public.students(name, birthdate, number) VALUES (?, ? ,?)",
-                studentMapper, newStudent.getName(), newStudent.getBirthdate(), newStudent.getNumber());
 
+    @Override
+    public long createStudent(Student student) {
+        return jdbcTemplate.queryForObject("insert into public.students (name, birthdate, number) values (?, ?, ?)"
+                + "RETURNING ID", Long.class, student.getName(), student.getBirthdate(), student.getNumber());
+    }
+
+    @Override
+    public Student updateStudent(Student student) {
+        jdbcTemplate.update("update public.students set name=?, birthdate=?, number=? where id=?",
+                student.getName(), student.getBirthdate(), student.getNumber(), student.getId());
+        return student;
+    }
+
+    @Override
+    public long deleteStudent(long id) {
+        return jdbcTemplate.queryForObject("delete from public.students where id=? RETURNING ID", Long.class, id);
     }
 }

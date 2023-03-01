@@ -4,8 +4,10 @@ import com.ssau.study.entity.Student;
 import com.ssau.study.repository.JdbcStudentRepository;
 import com.ssau.study.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -34,9 +36,19 @@ public class StudentController {
         return studentRepository.readStudent(id);
     }
 
+    @PatchMapping("/update")
+    public Student updateStudent(@RequestBody Student student) {
+        return studentRepository.updateStudent(student);
+    }
+
     @PostMapping("/create")
-    public Student createStudent(@RequestBody Student student)
-    {
+    public long createStudent(@RequestBody Student student) {
         return studentRepository.createStudent(student);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public long deleteStudent(@PathVariable long id) {
+        return studentRepository.deleteStudent(id);
+    }
+
 }
